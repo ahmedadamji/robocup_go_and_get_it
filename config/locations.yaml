@@ -1,0 +1,40 @@
+# This is calculated by finding the center point of the table, which is pose in gazebo, and then the pose of the links gives us the relative position of each leg to the center, we just need to calculate it
+# I have added some on each side as it is not the dimentions of the flat surface on the top (only done for table0 yet, other dimentions are still rough for the cuboid)
+# For table one it is assuming it is a square top with 1 m sides
+
+tables:
+  - name: 'dining table'
+    approach_location:
+      position: { x: -0.29669, y: -2.9197, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.99785, w: 0.065513 }
+    table_default_location:
+      position: { x: 0.59826, y: -2.9051, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.99259, w: 0.12151 }
+    status: 'not checked'
+      
+  - name: 'study table'
+    approach_location:
+      position: { x: 0.83675, y: -0.28629, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0, w: 0.9998 }
+    table_default_location:
+      position: { x: -0.57985, y: -0.117, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: -0.20, w: 0.97}
+    status: 'not checked'
+
+  - name: 'kitchen table'
+    approach_location:
+      position: { x: 0.025094, y: 3.0263, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.0016216, w: 1 }
+    table_default_location:
+      position: { x: -1.1372, y: 2.9074, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: -0.13325, w: 0.99108 }
+    status: 'not checked'
+
+  # - name: 'lounge table'
+  #   approach_location:
+  #     position: { x: 2.4824, y: -7.5183, z: 0.0 }
+  #     orientation: { x: 0.0, y: 0.0, z: -0.72898, w: 0.68453 }
+  #   table_default_location:
+  #     position: { x: 2.414, y: -6.6582, z: 0.0 }
+  #     orientation: { x: 0.0, y: 0.0, z: -0.491, w: 0.871 }
+  #   status: 'not checked'

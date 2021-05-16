@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+    <!-- Loading the custom motions, guest locations and features for disambiguation into the parameter server -->
+    <rosparam command="load" file="$(find robocup_go_and_get_it)/config/locations.yaml" />
+
+    <!-- Launching servers part of the pointing_recognition package as nodes -->
+
+
+    <!-- Launching packages used alongside -->
+    <node pkg="lasr_object_detection_yolo" type="object_detection_server.py" name="yolo_object_detection_server" respawn="true" output="screen"/>
+
+</launch>
