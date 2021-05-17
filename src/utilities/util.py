@@ -24,8 +24,7 @@ class Util:
     def __init__(self):
         rospy.loginfo("Util Utility Initialised")
 
-        self.load_object_features()
-        self.load_tables()
+        self.load_locations()
         self.transformer = tf.TransformListener()
     
     
@@ -106,39 +105,15 @@ class Util:
         camera_point_3d = np.array([tf_point.x, tf_point.y, tf_point.z])
         return camera_point_3d
 
-    def load_object_features(self):
 
-        object_attributes_parm = rospy.get_param("/object_attributes")
-        self.object_attributes = [
+    def load_locations(self):
+
+        locations_param = rospy.get_param("/locations")
+        self.locations = [
             {
-                "name":    objects["name"],
-                "colour":  objects["colour"],
-                "smooth":  objects["smooth"],
-                "shape":   objects["shape"]
+                "name":     location["name"],
+                "approach_location": location["approach_location"]
             }
-            for objects in object_attributes_parm
-        ]
-        
-        list_of_attributes_parm = rospy.get_param("/list_of_attributes")[0]
-        self.list_of_attributes = {
-            "colour":  list_of_attributes_parm["colour"],
-            "smooth":  list_of_attributes_parm["smooth"],
-            "shape":   list_of_attributes_parm["shape"],
-            "position": list_of_attributes_parm["position"]
-        }
-
-        self.list_of_objects_capable_of_disambiguation = rospy.get_param("/list_of_objects_capable_of_disambiguation")
-
-    def load_tables(self):
-
-        tables_param = rospy.get_param("/tables")
-        self.tables = [
-            {
-                "name":     table["name"],
-                "approach_location": table["approach_location"],
-                "table_default_location": table["table_default_location"],
-                "status":   table["status"]
-            }
-            for table in tables_param
+            for location in locations_param
         ]
 

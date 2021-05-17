@@ -8,6 +8,6 @@
 
 
     <!-- Launching packages used alongside -->
-    <node pkg="lasr_object_detection_yolo" type="object_detection_server.py" name="yolo_object_detection_server" respawn="true" output="screen"/>
+    <!-- <node pkg="lasr_object_detection_yolo" type="object_detection_server.py" name="yolo_object_detection_server" respawn="true" output="screen"/> -->
 
 </launch>

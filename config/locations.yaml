@@ -2,39 +2,23 @@
 # I have added some on each side as it is not the dimentions of the flat surface on the top (only done for table0 yet, other dimentions are still rough for the cuboid)
 # For table one it is assuming it is a square top with 1 m sides
 
-tables:
-  - name: 'dining table'
+locations:
+  - name: 'entrance'
     approach_location:
-      position: { x: -0.29669, y: -2.9197, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.99785, w: 0.065513 }
-    table_default_location:
-      position: { x: 0.59826, y: -2.9051, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.99259, w: 0.12151 }
-    status: 'not checked'
+      position: { x: 2.55, y: 1.91, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: -0.67, w: 0.74 }
       
-  - name: 'study table'
+  - name: 'obstacle avoidance'
     approach_location:
-      position: { x: 0.83675, y: -0.28629, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0, w: 0.9998 }
-    table_default_location:
-      position: { x: -0.57985, y: -0.117, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: -0.20, w: 0.97}
-    status: 'not checked'
+      position: { x: 4.64, y: -1.38, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.02, w: 1.00 }
 
-  - name: 'kitchen table'
+  - name: 'goal'
     approach_location:
-      position: { x: 0.025094, y: 3.0263, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.0016216, w: 1 }
-    table_default_location:
-      position: { x: -1.1372, y: 2.9074, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: -0.13325, w: 0.99108 }
-    status: 'not checked'
-
-  # - name: 'lounge table'
-  #   approach_location:
-  #     position: { x: 2.4824, y: -7.5183, z: 0.0 }
-  #     orientation: { x: 0.0, y: 0.0, z: -0.72898, w: 0.68453 }
-  #   table_default_location:
-  #     position: { x: 2.414, y: -6.6582, z: 0.0 }
-  #     orientation: { x: 0.0, y: 0.0, z: -0.491, w: 0.871 }
-  #   status: 'not checked'
+      position: { x: 6.60, y: -0.95, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: -0.04, w: 1.00 }
+      
+  - name: 'delivery'
+    approach_location:
+      position: { x: 6.23, y: 0.31, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.68, w: 0.73 }

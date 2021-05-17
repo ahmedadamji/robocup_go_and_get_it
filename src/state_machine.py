@@ -2,14 +2,14 @@
 import rospy
 import cv2
 from smach import State, StateMachine
-#from utilities import 
-#from states import 
+from utilities import Util, Move
+from states import ApproachPositions
 
 # main
 def main():
     rospy.init_node("state_machine")
-
-
+    move = Move()
+    util = Util()
 
     # Create a SMACH state machine
     sm = StateMachine(outcomes=["outcome1", "end"])
@@ -17,7 +17,7 @@ def main():
 
     with sm:
         # Add states to the container
-        #StateMachine.add("approach_person", ApproachPerson(classify_objects, interaction, util, move, table), transitions={"outcome1":"detect_pointing_location", "outcome2": "end"})
+        StateMachine.add("approach_positions", ApproachPositions(util, move), transitions={"outcome1":"end", "outcome2": "end"})
 
         sm.execute()
     
