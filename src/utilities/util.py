@@ -1,13 +1,10 @@
 #!/usr/bin/python
 import rospy
 import actionlib
-from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
 
 # Importing for speech recognition, interaction and replying to person
 # import speech_recognition as sr
-from pal_interaction_msgs.msg import TtsAction, TtsGoal
-import pyttsx
 
 import tf
 import numpy as np

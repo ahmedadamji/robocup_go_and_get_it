@@ -7,7 +7,6 @@ import actionlib
 from std_msgs.msg import Header
 from geometry_msgs.msg import Point, Pose, Quaternion, PointStamped, Vector3, PoseWithCovarianceStamped
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 import tf
 import math
 
@@ -27,16 +26,8 @@ class Move:
         self.movebase_client.wait_for_server()
         rospy.loginfo("The move_base action server is up")
 
-        # cancel previously sent goal before shutting down rospy
-        self.play_motion_goal_sent = False
-        # shutting down rospy
-        rospy.on_shutdown(self.shutdown)
 
 
-        # Starting playmotion action server:
-        self.play_motion = actionlib.SimpleActionClient("/play_motion", PlayMotionAction)
-        self.play_motion.wait_for_server(rospy.Duration(5))
-        rospy.loginfo("The play_motion action server is up")
 
     def move_base(self, location):
         # Creating Target Pose Header:
@@ -123,12 +114,9 @@ class Move:
             rospy.logwarn("Couldn't reach the goal!")
             return False, location
 
-    def shutdown(self):
 
-        if self.play_motion_goal_sent:
-            self.play_motion.cancel_goal()
-            rospy.loginfo("Stop Robot")
-            rospy.sleep(1)
+
+
 
 
 
