@@ -57,7 +57,7 @@ def mask_rcnn_transform():
 
 
 
-class MaskRCNN:
+class MaskRCNN(object):
     def __init__(self, model_path):
         self.model_path = None
         self.transform = mask_rcnn_transform()
