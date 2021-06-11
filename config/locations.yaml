@@ -5,8 +5,8 @@
 locations:
   - name: 'entrance'
     approach_location:
-      position: { x: -0.373, y: -0.171, z: 0 }
-      orientation: { x: 0.0, y: 0.0, z: -0.023, w: 0.9997 }
+      position: { x: 0.26, y: 0.44, z: 0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.35, w: 0.94 }
       
   - name: 'obstacle avoidance'
     approach_location:
@@ -18,7 +18,13 @@ locations:
       position: { x: 2.20, y: 3.99, z: 0.0 }
       orientation: { x: 0.0, y: 0.0, z: 0.65, w: 0.76 }
       
-  - name: 'person_a'
+  - name: 'person left'
     approach_location:
-      position: { x: 0.42, y: 2.89, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.998, w: -0.066 }
+      position: { x: 0.87, y: 2.94, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.998, w: -0.065 }
+      
+  - name: 'person right'
+    approach_location:
+      position: { x: 0.87, y: 3.89, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.998, w: -0.069 }
+      

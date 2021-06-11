@@ -9,9 +9,9 @@ import tf
 import math
 
 
-class ApproachPositions(State):
+class ApproachPerson(State):
     def __init__(self, util, move):
-        #rospy.loginfo("ApproachPositions state initialized")
+        #rospy.loginfo("ApproachPerson state initialized")
         
         State.__init__(self, outcomes=["outcome1","outcome2"])
 
@@ -38,7 +38,9 @@ class ApproachPositions(State):
 
 
     def execute(self, userdata, wait=True):
-        rospy.loginfo("ApproachPositions state executing")
+        rospy.loginfo("ApproachPerson state executing")
+
+        rospy.set_param("/message", "apple to person left")
 
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
@@ -51,10 +53,12 @@ class ApproachPositions(State):
 
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
-            print location_name + " is the target location."
+
             command = rospy.get_param("/message")
-            rospy.set_param("/current_location", self.locations[location_id])
-            current_location = self.locations[location_id]
-            self.move_to_location(current_location)
+
+            if location_name in command:
+                rospy.set_param("/current_location", self.locations[location_id])
+                current_location = self.locations[location_id]
+                self.move_to_location(current_location)
         
         return "outcome2"

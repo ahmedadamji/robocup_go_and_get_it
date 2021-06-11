@@ -1,0 +1,13 @@
+sudo docker-compose up
+
+docker-compose exec simulator bash
+roslaunch pal_navigation_cfg_tiago rviz.launch
+
+docker-compose exec simulator bash
+rosrun play_motion run_motion home
+
+docker-compose exec workspace bash
+source devel/setup.bash 
+roslaunch robocup_go_and_get_it support_modules.launch 
+rosrun robocup_go_and_get_it state_machine.py
+
