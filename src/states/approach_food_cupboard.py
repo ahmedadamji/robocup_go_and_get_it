@@ -20,6 +20,20 @@ class ApproachFoodCupboard(State):
         #creates an instance of move class to move robot across the map
         self.move = move
 
+    
+    def identify_obstacles(self):
+        ## Do Something
+
+    def get_point_cloud(self):
+        ## Do Something
+
+    def combine_point_cloud_and_laser(self):
+        ## Do Something
+
+
+    def obstacle_avoidance(self):
+        ## Do Something
+
 
 
     def move_to_location(self,current_location):
