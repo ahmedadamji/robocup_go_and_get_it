@@ -10,7 +10,7 @@ import math
 
 
 class ApproachFoodCupboard(State):
-    def __init__(self, util, move):
+    def __init__(self, util, move, ycb_maskrcnn):
         #rospy.loginfo("ApproachFoodCupboard state initialized")
         
         State.__init__(self, outcomes=["outcome1","outcome2"])
@@ -20,8 +20,11 @@ class ApproachFoodCupboard(State):
         #creates an instance of move class to move robot across the map
         self.move = move
 
+        self.ycb_maskrcnn = ycb_maskrcnn
+
     
     def identify_obstacles(self):
+
         ## Do Something
 
     def get_point_cloud(self):
