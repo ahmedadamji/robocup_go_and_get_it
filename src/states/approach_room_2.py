@@ -40,6 +40,8 @@ class ApproachRoomTwo(State):
     def execute(self, userdata, wait=True):
         rospy.loginfo("ApproachRoomTwo state executing")
 
+        #rospy.set_param("/message", "apple to person left") #remove later
+
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
 
@@ -62,7 +64,7 @@ class ApproachRoomTwo(State):
                 self.move_to_location(current_location)
 
         
-        command = rospy.get_param("/message")
-        rospy.set_param("/object", command)
+       # command = rospy.get_param("/message")
+       # rospy.set_param("/object", command)
         
         return "outcome2"

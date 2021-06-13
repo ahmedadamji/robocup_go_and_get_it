@@ -24,7 +24,7 @@ class ApproachPerson(State):
 
     def move_to_location(self,current_location):
         #location = rospy.get_param("/pointing_person_approach")
-        location = current_location.get("approach_location")
+        location = current_location.get("approach_location") 
 
         # Sending Move class the location to move to, and stores result in movebase
         movebase = self.move.move_base(location)
@@ -40,7 +40,7 @@ class ApproachPerson(State):
     def execute(self, userdata, wait=True):
         rospy.loginfo("ApproachPerson state executing")
 
-        rospy.set_param("/message", "apple to person left")
+        rospy.set_param("/message", "apple to person left") #remove later
 
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations

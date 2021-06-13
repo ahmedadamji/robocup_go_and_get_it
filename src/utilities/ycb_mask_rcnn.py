@@ -116,11 +116,15 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
         frame, pcl, boxes, clouds, scores, labels, labels_text, masks = mask_rcnn.detect(pclmsg, confidence=0.5)
-
+        
         # output point clouds
         for i, cloud in enumerate(clouds):
             pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
             pub.publish(cloud)
+
+            #pub = rospy.Publisher('segmentations'.format(i), PointCloud2, queue_size=1)
+            #pub.publish(cloud)
+
 
         for i, mask in enumerate(masks):
             label = labels[i]
