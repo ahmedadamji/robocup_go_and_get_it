@@ -129,7 +129,7 @@ class MaskRCNN(object):
         return boxes, labels, labels_txt, scores, masks
 
 
-    def detect(self, pclmsg, model_path='_default', confidence=0.7, mask_confidence=0.8, downsample=2):
+    def detect(self, pclmsg, model_path='_default', mask_confidence=0.8, downsample=2):
         pcl, frame, imgmsg = pclmsg_to_pcl_cv2_imgmsg(pclmsg)
         pred_boxes, pred_labels, pred_labels_text, pred_scores, pred_masks = self.forward(model_path, frame)
 
@@ -140,38 +140,37 @@ class MaskRCNN(object):
         cuboids = []
 
         for i, label in enumerate(pred_labels):
-            if pred_scores[i] > confidence:
-                # downsample everything
-                mask = pred_masks[i]
-                frame_ds = frame[::downsample, ::downsample, :]
-                pcl_ds = pcl[::downsample, ::downsample, :]
-                mask_ds = mask[::downsample, ::downsample]
+            # downsample everything
+            mask = pred_masks[i]
+            frame_ds = frame[::downsample, ::downsample, :]
+            pcl_ds = pcl[::downsample, ::downsample, :]
+            mask_ds = mask[::downsample, ::downsample]
 
-                # get indices of mask
-                binary_mask = mask_ds > mask_confidence
-                binary_mask = binary_mask.flatten()
-                indices = np.argwhere(binary_mask).flatten()
+            # get indices of mask
+            binary_mask = mask_ds > mask_confidence
+            binary_mask = binary_mask.flatten()
+            indices = np.argwhere(binary_mask).flatten()
 
-                # extract segmented detection
-                frame_out = np.take(frame_ds.reshape(frame_ds.shape[0] * frame_ds.shape[1], -1), indices, axis=0)
-                pcl_out = np.take(pcl_ds.reshape(pcl_ds.shape[0] * pcl_ds.shape[1], -1), indices, axis=0)
+            # extract segmented detection
+            frame_out = np.take(frame_ds.reshape(frame_ds.shape[0] * frame_ds.shape[1], -1), indices, axis=0)
+            pcl_out = np.take(pcl_ds.reshape(pcl_ds.shape[0] * pcl_ds.shape[1], -1), indices, axis=0)
 
-                # create pcl
-                pclmsg_out = PointCloud2()
-                pclmsg_out.header       = pclmsg.header
-                pclmsg_out.height       = pcl_out.shape[0]
-                pclmsg_out.width        = 1
-                pclmsg_out.fields       = pclmsg.fields
-                pclmsg_out.is_bigendian = pclmsg.is_bigendian
-                pclmsg_out.point_step   = pclmsg.point_step
-                pclmsg_out.row_step     = pcl_out.shape[1]
-                pclmsg_out.is_dense     = pclmsg.is_dense
-                pclmsg_out.data         = pcl_out.flatten().tostring()
+            # create pcl
+            pclmsg_out = PointCloud2()
+            pclmsg_out.header       = pclmsg.header
+            pclmsg_out.height       = pcl_out.shape[0]
+            pclmsg_out.width        = 1
+            pclmsg_out.fields       = pclmsg.fields
+            pclmsg_out.is_bigendian = pclmsg.is_bigendian
+            pclmsg_out.point_step   = pclmsg.point_step
+            pclmsg_out.row_step     = pcl_out.shape[1]
+            pclmsg_out.is_dense     = pclmsg.is_dense
+            pclmsg_out.data         = pcl_out.flatten().tostring()
 
-                # append results
-                masks.append(mask)
-                boxes.append(pred_boxes[i])
-                clouds.append(pclmsg_out)
+            # append results
+            masks.append(mask)
+            boxes.append(pred_boxes[i])
+            clouds.append(pclmsg_out)
         
         return frame, pcl, boxes, clouds, pred_scores, pred_labels, pred_labels_text, masks
 

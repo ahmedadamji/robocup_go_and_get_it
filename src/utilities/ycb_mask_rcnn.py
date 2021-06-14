@@ -63,8 +63,8 @@ class YcbMaskRCNN(MaskRCNN):
         self.net.to(DEVICE)
         self.net.eval()
 
-    def detect(self, pclmsg, confidence=0.7, mask_confidence=0.8, downsample=2):
-        return super(YcbMaskRCNN, self).detect(pclmsg, self.model_path, confidence=0.7, mask_confidence=0.8, downsample=2)
+    def detect(self, pclmsg, mask_confidence=0.8, downsample=2):
+        return super(YcbMaskRCNN, self).detect(pclmsg, self.model_path, mask_confidence=0.8, downsample=2)
 
 
 YCB_LABELS_FULL = [
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
-        frame, pcl, boxes, clouds, scores, labels, labels_text, masks = mask_rcnn.detect(pclmsg, confidence=0.5)
+        frame, pcl, boxes, clouds, scores, labels, labels_text, masks = mask_rcnn.detect(pclmsg)
 
         # output point clouds
         for i, cloud in enumerate(clouds):
@@ -123,6 +123,9 @@ if __name__ == '__main__':
             pub.publish(cloud)
 
         for i, mask in enumerate(masks):
+            if scores[i] < 0.1:
+                continue
+
             label = labels[i]
             colour = COLOURS[label]
 
