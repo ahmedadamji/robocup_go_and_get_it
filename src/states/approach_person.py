@@ -61,4 +61,11 @@ class ApproachPerson(State):
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
         
-        return "outcome2"
+                return "outcome1"
+
+        rospy.set_param("/current_location", self.locations[0])
+        current_location = self.locations[location_id]
+        self.move_to_location(current_location)
+
+        return "outcome1"
+        
