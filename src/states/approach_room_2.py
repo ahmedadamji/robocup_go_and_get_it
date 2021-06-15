@@ -12,7 +12,7 @@ import math
 class ApproachRoomTwo(State):
     def __init__(self, util, move):
         #rospy.loginfo("ApproachRoomTwo state initialized")
-        
+
         State.__init__(self, outcomes=["outcome1","outcome2"])
 
         #creates an instance of util class to transform point frames
@@ -58,13 +58,15 @@ class ApproachRoomTwo(State):
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
+
+
             if location_name == "obstacle avoidance":
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
 
-        
+
        # command = rospy.get_param("/message")
        # rospy.set_param("/object", command)
-        
+
         return "outcome2"

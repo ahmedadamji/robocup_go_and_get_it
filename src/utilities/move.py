@@ -9,6 +9,7 @@ from geometry_msgs.msg import Point, Pose, Quaternion, PointStamped, Vector3, Po
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import tf
 import math
+from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
 
 
 class Move:
@@ -25,6 +26,10 @@ class Move:
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
         rospy.loginfo("The move_base action server is up")
+
+        self.play_motion_goal_sent = False
+
+        
 
 
 
@@ -115,9 +120,23 @@ class Move:
             return False, location
 
 
+    def look_down(self, wait=False):
+        # lift torso height and head look down
+        self.play_motion_goal_sent = True
 
+        # Uncomment this if sending torso goal errors out again:
+        # torso_goal = FollowJointTrajectoryGoal()
 
+        # retrieveing play motion goal from motions.yaml
+        pm_goal = PlayMotionGoal("lower_head", True, 0)
 
+        test_goal = PlayMotionGoal()
+        #print test_goal.priority
 
+        # Sending play motion goal
+        self.play_motion.send_goal(pm_goal)
 
+        if wait:
+            self.play_motion.wait_for_result()
 
+        print("play motion: lower_head completed")

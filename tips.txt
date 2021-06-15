@@ -12,3 +12,12 @@ source devel/setup.bash
 roslaunch robocup_go_and_get_it support_modules.launch 
 rosrun robocup_go_and_get_it state_machine.py
 
+
+## installing packages
+docker-compose exec workspace bash
+cd workspace
+source devel/setup.bash 
+sudo apt-get install -y ros-melodic-play-motion
+
+
+

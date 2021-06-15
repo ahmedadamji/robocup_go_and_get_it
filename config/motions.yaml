@@ -1,0 +1,43 @@
+play_motion:
+ 	motions:
+ 		lift_torso:
+ 			joints: ['torso_lift_joint']
+ 			points:
+ 			- positions: [0.34]
+ 				time_from_start: 1.0
+ 
+	 	lower_torso:
+	 		joints: ['torso_lift_joint']
+ 			points:
+ 			- positions: [0.08]
+ 				time_from_start: 1.0
+ 
+		 lift_head:
+			 joints: ['head_1_joint', 'head_2_joint']
+			 points:
+			 - positions: [0.0, 0.0]
+				 time_from_start: 1.0
+ 
+		 lower_head:
+			 joints: ['head_1_joint', 'head_2_joint']
+			 points:
+			 - positions: [0.0, -0.75]
+				 time_from_start: 1.0
+		 
+		 check_table:
+			 joints: [torso_lift_joint, head_1_joint, head_2_joint]
+			 points:
+			 - positions: [0.34, 0.0, -0.51]
+				time_from_start: 1.0
+		 
+		 look_at_person:
+			 joints: ['torso_lift_joint', 'head_1_joint', 'head_2_joint']
+			 points:
+			 - positions: [0.34, 0.0, 0.11]
+				 time_from_start: 1.0
+		 
+		 back_to_default:
+			joints: ['torso_lift_joint', 'head_1_joint', 'head_2_joint']
+			points:
+			 - positions: [0.34, 0.0, -0.15]
+				 time_from_start: 1.0
