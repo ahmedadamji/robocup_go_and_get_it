@@ -18,9 +18,9 @@ import actionlib
 
 
 class ApproachFoodCupboard(State):
-    def __init__(self, util, move, ycb_maskrcnn):
+    def __init__(self, util, move, ycb_maskrcnn, segmentfloor):
         #rospy.loginfo("ApproachFoodCupboard state initialized")
-        
+
         State.__init__(self, outcomes=["outcome1","outcome2"])
 
         #creates an instance of util class to transform point frames
@@ -29,29 +29,18 @@ class ApproachFoodCupboard(State):
         self.move = move
 
         self.tf = TransformListener()
-        
+
         self.ycb_maskrcnn = ycb_maskrcnn
 
-    def send_joint_trajectory(self, topic_name, joint_names, position, time_from_start):
-        print("trying to look down")
-        head_trajectory_client = actionlib.SimpleActionClient(topic_name, FollowJointTrajectoryAction)
-
-        goal = FollowJointTrajectoryGoal()
-        goal.trajectory.joint_names = joint_names
-
-        #set first and only position
-        goal.trajectory.points.append(JointTrajectoryPoint())
-        goal.trajectory.points[0].positions = position 
-        goal.trajectory.points[0].time_from_start = rospy.Duration(time_from_start)
-        
-        head_trajectory_client.wait_for_server()
-        head_trajectory_client.send_goal(goal)
-
-        return head_trajectory_client.wait_for_result, head_trajectory_client.get_result
+        self.segmentfloor = segmentfloor
 
 
     def identify_obstacles(self):
-        #ycb_sub = rospy.Subscriber('segmentations/{}', 1, callback = self.get_point_cloud)
+        self.move.look_down()
+        self.segmentfloor.detect()
+
+
+        '''
         # colour stuff
         np.random.seed(69)
         COLOURS = np.random.randint(0, 256, (128,3))
@@ -59,14 +48,11 @@ class ApproachFoodCupboard(State):
         while not rospy.is_shutdown():
             pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
             frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
-        
+
             # output point clouds
             for i, cloud in enumerate(clouds):
                 pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
                 pub.publish(cloud)
-                #print(i, cloud)
-                #pub = rospy.Publisher('segmentations'.format(i), PointCloud2, queue_size=1)
-                #pub.publish(cloud)
 
 
             for i, mask in enumerate(masks):
@@ -86,7 +72,8 @@ class ApproachFoodCupboard(State):
 
             cv2.imshow('test', frame)
             cv2.waitKey(1)
-            
+            '''
+
 
     def get_point_cloud(self, data):
         point = self.tf.transformPoint("/base_link", data.i)
@@ -95,7 +82,7 @@ class ApproachFoodCupboard(State):
 
     #def combine_point_cloud_and_laser(self):
         ## Do Something
-    
+
     #def obstacle_avoidance(self):
         ## Do Something
 
@@ -118,11 +105,6 @@ class ApproachFoodCupboard(State):
         rospy.loginfo("ApproachFoodCupboard state executing")
         rospy.set_param("/message", "apple to person left")
 
-        head = -0.75
-        torso_lift = np.random.uniform(0.0,0.35)
-        self.send_joint_trajectory('/head_controller/follow_joint_trajectory', ['head_1_joint','head_2_joint'], [0, head], 2.0)
-        #self.send_joint_trajectory('/torso_controller/folow_joint_trajectory', ['torso_lift_joint'],[torso_lift],2.0)
-
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
 
@@ -144,5 +126,5 @@ class ApproachFoodCupboard(State):
 
         command = rospy.get_param("/message")
         rospy.set_param("/object", command)
-        
+
         return "outcome2"

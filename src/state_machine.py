@@ -4,8 +4,10 @@ import rospy
 import cv2
 import rospkg
 from smach import State, StateMachine
-from utilities import Util, Move, YcbMaskRCNN, MaskRCNN
+from utilities import Util, Move, YcbMaskRCNN, MaskRCNN, SegmentFloor
 from states import ApproachPositions, ApproachPerson, ApproachRoomTwo, ApproachFoodCupboard
+import threading
+import time
 
 YCB_LABELS_FULL = [
             'ycb_063-a_marbles', 'ycb_052_extra_large_clamp', 'ycb_014_lemon',
@@ -42,9 +44,10 @@ def main():
     rospy.init_node("state_machine")
     move = Move()
     util = Util()
+    segmentfloor = SegmentFloor()
     MODEL_PATH = os.path.join(rospkg.RosPack().get_path('robocup_go_and_get_it'), 'src/utilities/robocup.weights')
     ycb_maskrcnn = YcbMaskRCNN(MODEL_PATH, YCB_LABELS_FULL)
-   
+
 
     # Create a SMACH state machine
     sm = StateMachine(outcomes=["outcome1", "end"])
@@ -54,11 +57,11 @@ def main():
         # Add states to the container
         #StateMachine.add("approach_positions", Approachpositions(util, move), transitions={"outcome1":"end", "outcome2": "end"})
         StateMachine.add("approach_room_2", ApproachRoomTwo(util, move), transitions={"outcome1":"approach_food_cupboard", "outcome2": "approach_food_cupboard"})
-        StateMachine.add("approach_food_cupboard", ApproachFoodCupboard(util, move, ycb_maskrcnn), transitions={"outcome1":"approach_person", "outcome2": "approach_person"})
+        StateMachine.add("approach_food_cupboard", ApproachFoodCupboard(util, move, ycb_maskrcnn, segmentfloor), transitions={"outcome1":"approach_person", "outcome2": "approach_person"})
         StateMachine.add("approach_person", ApproachPerson(util, move), transitions={"outcome1":"end", "outcome2": "end"})
 
         sm.execute()
-    
+
     #cv2.waitKey(0)
 
     #rospy.spin()

@@ -1,13 +1,10 @@
+#!/usr/bin/python
 import rospy
 import ros_numpy
 import numpy as np
 from sensor_msgs.msg import PointCloud2
 
-data = np.zeros(100, dtype=[
-  ('x', np.float32),
-  ('y', np.float32),
-  ('z', np.float32)
-])
+data = np.zeros(100, dtype=[('x', np.float32),('y', np.float32),('z', np.float32)])
 
 msg = ros_numpy.msgify(PointCloud2, data)
 msg.header.frame_id = 'map'

@@ -41,6 +41,7 @@ class SegmentFloor():
 
 
     def detect(self):
+        print("detecting obstacles")
         mask_confidence = 0.5
 
         #subscriber to depth data
@@ -85,7 +86,8 @@ class SegmentFloor():
 
         # results
         cloud = pclmsg_out
-        pub = rospy.Publisher('segmentations', PointCloud2, queue_size=1)
+        pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
+        rospy.sleep(1)
         pub.publish(cloud)
 
         cv2.namedWindow('masked_image')
@@ -100,12 +102,9 @@ class SegmentFloor():
 
 
     def callback(self):
-
         try:
-
             self.image = rospy.wait_for_message("/xtion/rgb/image_raw",Image)
             img = self.bridge.imgmsg_to_cv2(self.image, 'bgr8')
-
             original_image = img
 
             hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -113,12 +112,10 @@ class SegmentFloor():
             colour_low = np.array([10, 30, 20])
             colour_high = np.array([40, 255, 255])
 
-
             floor_mask = cv2.inRange(hsv_image, colour_low, colour_high)
             floor_mask = cv2.bitwise_not(floor_mask)
             img = cv2.bitwise_and(img, img, mask = floor_mask)
             obstacles = original_image - img
-
 
             cv2.namedWindow('masked_image')
             cv2.imshow('masked_image', img)
@@ -135,6 +132,7 @@ class SegmentFloor():
 
 
 
+
 if __name__ == '__main__':
 
     rospy.init_node('floor_test')
@@ -142,6 +140,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
 
         MV = Move()
+        MV.hand_to_default()
         MV.look_down()
         FL = SegmentFloor()
         FL.detect()

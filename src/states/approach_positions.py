@@ -12,7 +12,7 @@ import math
 class ApproachPositions(State):
     def __init__(self, util, move):
         #rospy.loginfo("ApproachPositions state initialized")
-        
+
         State.__init__(self, outcomes=["outcome1","outcome2"])
 
         #creates an instance of util class to transform point frames
@@ -56,5 +56,5 @@ class ApproachPositions(State):
             rospy.set_param("/current_location", self.locations[location_id])
             current_location = self.locations[location_id]
             self.move_to_location(current_location)
-        
+
         return "outcome2"

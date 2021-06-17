@@ -12,7 +12,7 @@ import math
 class ApproachPerson(State):
     def __init__(self, util, move):
         #rospy.loginfo("ApproachPerson state initialized")
-        
+
         State.__init__(self, outcomes=["outcome1","outcome2"])
 
         #creates an instance of util class to transform point frames
@@ -24,7 +24,7 @@ class ApproachPerson(State):
 
     def move_to_location(self,current_location):
         #location = rospy.get_param("/pointing_person_approach")
-        location = current_location.get("approach_location") 
+        location = current_location.get("approach_location")
 
         # Sending Move class the location to move to, and stores result in movebase
         movebase = self.move.move_base(location)
@@ -60,12 +60,13 @@ class ApproachPerson(State):
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
-        
+
                 return "outcome1"
 
         rospy.set_param("/current_location", self.locations[0])
         current_location = self.locations[location_id]
         self.move_to_location(current_location)
 
+        self.move.offer_hand()
+
         return "outcome1"
-        

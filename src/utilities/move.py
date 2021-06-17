@@ -10,6 +10,10 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import tf
 import math
 from play_motion_msgs.msg import PlayMotionAction, PlayMotionGoal
+from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
+from trajectory_msgs.msg import JointTrajectoryPoint
+import actionlib
+
 
 
 class Move:
@@ -22,16 +26,14 @@ class Move:
 
         # create the action client:
         self.movebase_client = actionlib.SimpleActionClient("/move_base", MoveBaseAction)
+        self.playmotion_client = actionlib.SimpleActionClient("/play_motion", PlayMotionAction)
 
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
         rospy.loginfo("The move_base action server is up")
 
-        self.play_motion_goal_sent = False
-
-        
-
-
+        self.playmotion_client.wait_for_server()
+        rospy.loginfo("The play_motion action server is up")
 
 
     def move_base(self, location):
@@ -119,24 +121,37 @@ class Move:
             rospy.logwarn("Couldn't reach the goal!")
             return False, location
 
+    def send_joint_trajectory(self, topic_name, joint_names, position, time_from_start):
+        print("trying to look down")
+        head_trajectory_client = actionlib.SimpleActionClient(topic_name, FollowJointTrajectoryAction)
 
-    def look_down(self, wait=False):
-        # lift torso height and head look down
-        self.play_motion_goal_sent = True
+        goal = FollowJointTrajectoryGoal()
+        goal.trajectory.joint_names = joint_names
 
-        # Uncomment this if sending torso goal errors out again:
-        # torso_goal = FollowJointTrajectoryGoal()
+        #set first and only position
+        goal.trajectory.points.append(JointTrajectoryPoint())
+        goal.trajectory.points[0].positions = position
+        goal.trajectory.points[0].time_from_start = rospy.Duration(time_from_start)
 
-        # retrieveing play motion goal from motions.yaml
-        pm_goal = PlayMotionGoal("lower_head", True, 0)
+        head_trajectory_client.wait_for_server()
+        head_trajectory_client.send_goal(goal)
 
-        test_goal = PlayMotionGoal()
-        #print test_goal.priority
+        return head_trajectory_client.wait_for_result, head_trajectory_client.get_result
 
-        # Sending play motion goal
-        self.play_motion.send_goal(pm_goal)
 
-        if wait:
-            self.play_motion.wait_for_result()
+    def look_down(self):
+        head = -0.75
+        wait, result = self.send_joint_trajectory('/head_controller/follow_joint_trajectory', ['head_1_joint','head_2_joint'], [0, head], 2.0)
+        wait()
 
-        print("play motion: lower_head completed")
+    def hand_to_default(self):
+        goal = PlayMotionGoal()
+        goal.motion_name = "home"
+        #goal.skip_planning = 'skip_planning'
+        self.playmotion_client.send_goal(goal)
+
+    def offer_hand(self):
+        goal = PlayMotionGoal()
+        goal.motion_name = "pregrasp_weight"
+        #goal.skip_planning = False
+        self.playmotion_client.send_goal(goal)
