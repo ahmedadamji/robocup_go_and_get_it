@@ -3,18 +3,9 @@ import rospy
 import actionlib
 
 from smach import State
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from geometry_msgs.msg import Point, Pose, Quaternion, PointStamped, Vector3, PoseWithCovarianceStamped
-from tf import TransformListener
-import math
-from PIL import Image
 from sensor_msgs.msg import PointCloud2
-from cv_bridge import CvBridge
 import numpy as np
 import cv2
-from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
-from trajectory_msgs.msg import JointTrajectoryPoint
-import actionlib
 
 
 class FindObject(State):
@@ -25,10 +16,7 @@ class FindObject(State):
 
         #creates an instance of util class to transform point frames
         self.util = util
-        #creates an instance of move class to move robot across the map
-        self.move = move
 
-        self.tf = TransformListener()
         
         self.ycb_maskrcnn = ycb_maskrcnn
 
