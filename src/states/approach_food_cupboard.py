@@ -39,7 +39,6 @@ class ApproachFoodCupboard(State):
     def identify_obstacles(self):
         self.move.look_down()
         self.segmentfloor.detect()
-        print"a"
 
 
         '''
@@ -116,7 +115,7 @@ class ApproachFoodCupboard(State):
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
 
-        rospy.Subscriber('obstacles_detect', None, callback = self.identify_obstacles)
+        rospy.Subscriber('obstacles_detect', String, callback = self.identify_obstacles)
 
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
