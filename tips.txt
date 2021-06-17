@@ -1,23 +1,12 @@
-sudo docker-compose up
+sudo docker-compose -f docker-compose.fps.yml up
 
 docker-compose exec simulator bash
+cd workspace
+source devel/setup.bash
 roslaunch pal_navigation_cfg_tiago rviz.launch
 
-docker-compose exec simulator bash
-rosrun play_motion run_motion home
-
 docker-compose exec workspace bash
 cd workspace
-source devel/setup.bash 
+source devel/setup.bash
 roslaunch robocup_go_and_get_it support_modules.launch 
 rosrun robocup_go_and_get_it state_machine.py
-
-
-## installing packages
-docker-compose exec workspace bash
-cd workspace
-source devel/setup.bash 
-sudo apt-get install -y ros-melodic-play-motion
-
-
-

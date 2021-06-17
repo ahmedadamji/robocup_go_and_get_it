@@ -5,7 +5,7 @@ import cv2
 import rospkg
 from smach import State, StateMachine
 from utilities import Util, Move, YcbMaskRCNN, MaskRCNN, SegmentFloor
-from states import ApproachPositions, ApproachPerson, ApproachRoomTwo, ApproachFoodCupboard
+from states import ApproachPositions, ApproachPerson, ApproachRoomTwo, ApproachFoodCupboard, FindObject
 import threading
 import time
 
@@ -49,15 +49,16 @@ def main():
     ycb_maskrcnn = YcbMaskRCNN(MODEL_PATH, YCB_LABELS_FULL)
 
 
+
     # Create a SMACH state machine
     sm = StateMachine(outcomes=["outcome1", "end"])
     # Open the container
 
     with sm:
         # Add states to the container
-        #StateMachine.add("approach_positions", Approachpositions(util, move), transitions={"outcome1":"end", "outcome2": "end"})
         StateMachine.add("approach_room_2", ApproachRoomTwo(util, move), transitions={"outcome1":"approach_food_cupboard", "outcome2": "approach_food_cupboard"})
-        StateMachine.add("approach_food_cupboard", ApproachFoodCupboard(util, move, ycb_maskrcnn, segmentfloor), transitions={"outcome1":"approach_person", "outcome2": "approach_person"})
+        StateMachine.add("approach_food_cupboard", ApproachFoodCupboard(util, move, ycb_maskrcnn, segmentfloor), transitions={"outcome1":"find_object", "outcome2": "find_object"})
+        StateMachine.add("find_object", FindObject(util, move, ycb_maskrcnn), transitions={"outcome1":"approach_person", "outcome2": "approach_person"})
         StateMachine.add("approach_person", ApproachPerson(util, move), transitions={"outcome1":"end", "outcome2": "end"})
 
         sm.execute()
@@ -72,3 +73,4 @@ if __name__ == "__main__":
         main()
     except rospy.ROSInterruptException:
         rospy.loginfo("State Machine terminated...")
+

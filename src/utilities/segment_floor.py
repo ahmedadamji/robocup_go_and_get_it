@@ -137,13 +137,17 @@ if __name__ == '__main__':
 
     rospy.init_node('floor_test')
 
-    while not rospy.is_shutdown():
-
+    try:
         MV = Move()
+        FL = SegmentFloor()
         MV.hand_to_default()
         MV.look_down()
-        FL = SegmentFloor()
-        FL.detect()
 
-    rospy.spin()
+        while not rospy.is_shutdown():
+
+            FL.detect()
+
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
     #cv2.destroyAllWindows
