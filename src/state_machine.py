@@ -56,7 +56,7 @@ def main():
 
     with sm:
         # Add states to the container
-        #StateMachine.add("approach_room_2", ApproachRoomTwo(util, move), transitions={"outcome1":"approach_food_cupboard", "outcome2": "approach_food_cupboard"})
+        StateMachine.add("approach_room_2", ApproachRoomTwo(util, move), transitions={"outcome1":"approach_food_cupboard", "outcome2": "approach_food_cupboard"})
         StateMachine.add("approach_food_cupboard", ApproachFoodCupboard(util, move, ycb_maskrcnn, segmentfloor), transitions={"outcome1":"find_object", "outcome2": "find_object"})
         StateMachine.add("find_object", FindObject(util, move, ycb_maskrcnn), transitions={"outcome1":"approach_person", "outcome2": "approach_person"})
         StateMachine.add("approach_person", ApproachPerson(util, move), transitions={"outcome1":"end", "outcome2": "end"})

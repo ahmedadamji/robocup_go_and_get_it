@@ -15,7 +15,7 @@ import cv2
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
 from trajectory_msgs.msg import JointTrajectoryPoint
 import actionlib
-from std_msgs.msg import String
+from std_msgs.msg import Empty
 
 
 class ApproachFoodCupboard(State):
@@ -37,55 +37,16 @@ class ApproachFoodCupboard(State):
 
 
     def identify_obstacles(self):
+        print("a")
         self.move.look_down()
-        self.segmentfloor.detect()
-
-
-        '''
-        # colour stuff
-        np.random.seed(69)
-        COLOURS = np.random.randint(0, 256, (128,3))
-        alpha = 0.5
         while not rospy.is_shutdown():
-            pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
-            frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
-
-            # output point clouds
-            for i, cloud in enumerate(clouds):
-                pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
-                pub.publish(cloud)
-
-
-            for i, mask in enumerate(masks):
-                label = labels[i]
-                colour = COLOURS[label]
-
-                # segmentation masks
-                binary_mask = mask > 0.5
-                frame_coloured = np.array((frame * (1-alpha) + colour * alpha), dtype=np.uint8)
-                frame = np.where(binary_mask, frame_coloured, frame)
-
-                # bboxes + info
-                x1, y1, x2, y2 = [int(v) for v in boxes[i]]
-                cv2.putText(frame, 'confidence: {:.2f}'.format(scores[i]), (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
-                cv2.putText(frame, 'class: {}'.format(labels_text[i]), (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
-                cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
-
-            cv2.imshow('test', frame)
-            cv2.waitKey(1)
-            '''
+            self.segmentfloor.detect()
 
 
     def get_point_cloud(self, data):
         point = self.tf.transformPoint("/base_link", data.i)
         print(point)
-        ## Do Something
 
-    #def combine_point_cloud_and_laser(self):
-        ## Do Something
-
-    #def obstacle_avoidance(self):
-        ## Do Something
 
     def move_to_location(self,current_location):
         #location = rospy.get_param("/pointing_person_approach")
@@ -115,7 +76,8 @@ class ApproachFoodCupboard(State):
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
 
-        rospy.Subscriber('obstacles_detect', String, callback = self.identify_obstacles)
+        sub = rospy.Subscriber("identify_obstacles_sub", Empty, self.identify_obstacles, queue_size=1)
+        
 
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
