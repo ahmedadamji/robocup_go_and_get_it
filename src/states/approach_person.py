@@ -35,6 +35,11 @@ class ApproachPerson(State):
             # INSERT HERE THE ACTION IF GOAL NOT ACHIEVED
             self.interaction.talk("I have not been able to reach the " + current_location.get("name") )
 
+        self.util.clear_octomap()
+        rospy.sleep(1.0)
+        self.move.offer_hand()
+        self.move.open_gripper()
+
 
 
     def execute(self, userdata, wait=True):
@@ -67,6 +72,6 @@ class ApproachPerson(State):
         current_location = self.locations[location_id]
         self.move_to_location(current_location)
 
-        self.move.offer_hand()
+
 
         return "outcome1"

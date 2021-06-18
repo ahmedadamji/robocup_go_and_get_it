@@ -87,5 +87,6 @@ class ApproachFoodCupboard(State):
         sub.unregister()
         command = rospy.get_param("/message")
         rospy.set_param("/object", command)
+        self.move.look_down(0)
 
         return "outcome2"

@@ -146,11 +146,20 @@ class Move:
     def hand_to_default(self):
         goal = PlayMotionGoal()
         goal.motion_name = "home"
-        #goal.skip_planning = 'skip_planning'
+        goal.skip_planning = False
         self.playmotion_client.send_goal(goal)
+        self.playmotion_client.wait_for_result()
 
     def offer_hand(self):
         goal = PlayMotionGoal()
         goal.motion_name = "pregrasp_weight"
-        #goal.skip_planning = False
+        goal.skip_planning = False
         self.playmotion_client.send_goal(goal)
+        self.playmotion_client.wait_for_result()
+
+    def open_gripper(self):
+        goal = PlayMotionGoal()
+        goal.motion_name = "open_gripper"
+        goal.skip_planning = False
+        self.playmotion_client.send_goal(goal)
+        self.playmotion_client.wait_for_result()

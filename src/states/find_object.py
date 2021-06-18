@@ -7,6 +7,7 @@ from sensor_msgs.msg import PointCloud2
 import numpy as np
 import cv2
 
+from robocup_grasps import main as grasp_main
 
 class FindObject(State):
     def __init__(self, util, move, ycb_maskrcnn):
@@ -19,7 +20,7 @@ class FindObject(State):
 
         
         self.ycb_maskrcnn = ycb_maskrcnn
-
+        self.object_world_coordinate = 0
 
 
     def identify_objects(self):
@@ -57,7 +58,7 @@ class FindObject(State):
             cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
 
 
-            if sellf.object in label:
+            if self.object in label:
                 x = (x1+x2)/2
                 y = (y1+y2)/2
                 camera_point_2d = [x,y]
@@ -70,6 +71,8 @@ class FindObject(State):
         cv2.imshow('test', frame)
         cv2.waitKey(1)
             
+    def grasp_object(self):
+        grasp_main()
 
 
     def execute(self, userdata, wait=True):
@@ -77,7 +80,8 @@ class FindObject(State):
 
         self.object = rospy.get_param("/object")
 
-        self.identify_objects()
+        # self.identify_objects()
+        self.grasp_object()
 
         rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
         

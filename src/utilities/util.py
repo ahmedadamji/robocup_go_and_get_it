@@ -14,6 +14,7 @@ import ros_numpy
 from geometry_msgs.msg import Point, PointStamped, Pose
 from sensor_msgs.msg import PointCloud2, CameraInfo
 from nav_msgs.msg import OccupancyGrid
+from std_srvs.srv import Empty
 
 
 
@@ -114,3 +115,8 @@ class Util:
             for location in locations_param
         ]
 
+
+    def clear_octomap(self):
+        rospy.wait_for_service('/clear_octomap')
+        clear_octomap_svc = rospy.ServiceProxy('/clear_octomap', Empty)
+        clear_octomap_svc()
