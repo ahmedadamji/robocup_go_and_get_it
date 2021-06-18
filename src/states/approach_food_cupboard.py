@@ -36,11 +36,8 @@ class ApproachFoodCupboard(State):
         self.segmentfloor = segmentfloor
 
 
-    def identify_obstacles(self):
-        print("a")
-        self.move.look_down()
-        while not rospy.is_shutdown():
-            self.segmentfloor.detect()
+    def identify_obstacles(self, data):
+        self.segmentfloor.detect(data)
 
 
     def get_point_cloud(self, data):
@@ -76,8 +73,10 @@ class ApproachFoodCupboard(State):
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
 
-        sub = rospy.Subscriber("identify_obstacles_sub", Empty, self.identify_obstacles, queue_size=1)
-        
+        # sub = rospy.Subscriber("/xtion/depth_registered/points", PointCloud2, self.identify_obstacles, queue_size=1) # uncomment for sub
+        # self.move.look_down(-1.0) # uncomment for sub
+        self.move.look_down()
+        self.identify_obstacles(rospy.wait_for_message("/xtion/depth_registered/points", PointCloud2))
 
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
@@ -87,6 +86,7 @@ class ApproachFoodCupboard(State):
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
 
+        # sub.unregister() # uncomment for sub
         command = rospy.get_param("/message")
         rospy.set_param("/object", command)
 

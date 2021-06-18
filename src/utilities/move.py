@@ -139,8 +139,7 @@ class Move:
         return head_trajectory_client.wait_for_result, head_trajectory_client.get_result
 
 
-    def look_down(self):
-        head = -0.75
+    def look_down(self, head=-0.75):
         wait, result = self.send_joint_trajectory('/head_controller/follow_joint_trajectory', ['head_1_joint','head_2_joint'], [0, head], 2.0)
         wait()
 

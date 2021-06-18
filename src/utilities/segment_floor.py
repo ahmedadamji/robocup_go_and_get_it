@@ -21,6 +21,8 @@ class SegmentFloor():
         self.image = None
         self.cloud = None
         self.sensitivity = 10
+        self.pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
+        rospy.sleep(1)
 
 
     def pclmsg_to_pcl_cv2_imgmsg(self, pclmsg):
@@ -40,12 +42,8 @@ class SegmentFloor():
         return pcl, frame, imgmsg
 
 
-    def detect(self):
-        print("detecting obstacles")
+    def detect(self, pclmsg):
         mask_confidence = 0.5
-
-        #subscriber to depth data
-        pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
 
         #convert pcl msg
         pcl, img, imgmsg = self.pclmsg_to_pcl_cv2_imgmsg(pclmsg)
@@ -86,9 +84,7 @@ class SegmentFloor():
 
         # results
         cloud = pclmsg_out
-        pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
-        rospy.sleep(1)
-        pub.publish(cloud)
+        self.pub.publish(cloud)
 
         cv2.namedWindow('masked_image')
         cv2.imshow('masked_image', img)
@@ -145,7 +141,7 @@ if __name__ == '__main__':
 
         while not rospy.is_shutdown():
 
-            FL.detect()
+            FL.detect(rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2))
 
         rospy.spin()
     except rospy.ROSInterruptException:
