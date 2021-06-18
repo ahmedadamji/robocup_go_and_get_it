@@ -65,25 +65,26 @@ class SegmentFloor():
         obstacles = img
 
         binary_mask = obstacles_mask > mask_confidence
-        binary_mask = binary_mask.flatten()
-        indices = np.argwhere(binary_mask).flatten()
+        cv2.imshow('binmask', binary_mask.astype(np.float32))
+        indices = np.argwhere(binary_mask)
 
-        pcl_out = np.take(pcl.reshape(pcl.shape[0] * pcl.shape[1], -1), indices, axis=0)
+        # set dist to infinity if x,y in mask = 0
+        # otherwise keep dist if x,y in mask = 1
+        # complexity is O(3N) so it should b fast
+        pcl = pcl.reshape(pclmsg.height, pclmsg.width, 32)
+        pcl = pcl.view(np.float32)
+        temp = {}
+        for y,x in indices:
+            temp[y,x] = pcl[y,x,2]
+        pcl[:,:,2] = float('inf')
+        for y,x in indices:
+            pcl[y,x,2] = temp[y,x]
 
         # create pcl
-        pclmsg_out = PointCloud2()
-        pclmsg_out.header       = pclmsg.header
-        pclmsg_out.height       = pcl_out.shape[0]
-        pclmsg_out.width        = 1
-        pclmsg_out.fields       = pclmsg.fields
-        pclmsg_out.is_bigendian = pclmsg.is_bigendian
-        pclmsg_out.point_step   = pclmsg.point_step
-        pclmsg_out.row_step     = pcl_out.shape[1]
-        pclmsg_out.is_dense     = pclmsg.is_dense
-        pclmsg_out.data         = pcl_out.flatten().tostring()
+        pclmsg.data = pcl.flatten().tostring()
 
         # results
-        cloud = pclmsg_out
+        cloud = pclmsg
         self.pub.publish(cloud)
 
         cv2.namedWindow('masked_image')
@@ -139,10 +140,7 @@ if __name__ == '__main__':
         MV.hand_to_default()
         MV.look_down()
 
-        while not rospy.is_shutdown():
-
-            FL.detect(rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2))
-
+        sub = rospy.Subscriber('/xtion/depth_registered/points', PointCloud2, FL.detect, queue_size=1)
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
