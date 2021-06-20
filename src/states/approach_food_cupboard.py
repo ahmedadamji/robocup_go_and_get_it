@@ -19,6 +19,8 @@ from std_msgs.msg import Empty
 
 
 
+
+
 class ApproachFoodCupboard(State):
     def __init__(self, util, move, ycb_maskrcnn, segmentfloor):
         #rospy.loginfo("ApproachFoodCupboard state initialized")
@@ -37,9 +39,10 @@ class ApproachFoodCupboard(State):
         self.segmentfloor = segmentfloor
 
 
+
     def identify_obstacles(self, data):
-        #self.object_aware_cloud = self.segmentfloor.detect(data)
-        print("A")
+        self.segmentfloor.detect(data, self.ycb_maskrcnn)
+
 
     def pclmsg_to_pcl_cv2_imgmsg(self, pclmsg):
         # extract the xyz values from 32FC1
@@ -56,87 +59,6 @@ class ApproachFoodCupboard(State):
         imgmsg = bridge.cv2_to_imgmsg(frame, encoding='rgb8')
 
         return pcl, frame, imgmsg
-
-    def segment_cloud(self, cloud, pclmsg):
-        mask_confidence = 0.5
-
-        #convert pcl msg
-        pcl, img, imgmsg = self.pclmsg_to_pcl_cv2_imgmsg(cloud)
-
-        original_image = img
-        hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        kernel = np.ones((5, 5), np.uint8)
-
-        #colour hsv values
-        colour_low = np.array([10, 30, 20])
-        colour_high = np.array([40, 255, 255])
-        white = np.array([0,0,0])
-
-        #mask the floor and obstacles
-        floor_mask = cv2.inRange(hsv_image, colour_low, colour_high)
-        obstacles_mask = floor_mask
-        img = cv2.bitwise_and(img, img, mask = obstacles_mask)
-        #obstacles = original_image - img
-        obstacles = img
-
-        binary_mask = obstacles_mask > mask_confidence
-        cv2.imshow('binmask', binary_mask.astype(np.float32))
-        indices = np.argwhere(binary_mask)
-
-        # set dist to infinity if x,y in mask = 0
-        # otherwise keep dist if x,y in mask = 1
-        # complexity is O(3N) so it should b fast
-        pcl = pcl.reshape(cloud.height, cloud.width, 32)
-        pcl = pcl.view(np.float32)
-        temp = {}
-        for y,x in indices:
-            temp[y,x] = pcl[y,x,2]
-        pcl[:,:,2] = float('inf')
-        for y,x in indices:
-            pcl[y,x,2] = temp[y,x]
-
-        # create pcl
-        cloud.data = pcl.flatten().tostring()
-
-        return cloud
-
-
-    def identify_objects(self):
-        #ycb_sub = rospy.Subscriber('segmentations/{}', 1, callback = self.get_point_cloud)
-        # colour stuff
-        np.random.seed(69)
-        COLOURS = np.random.randint(0, 256, (128,3))
-        alpha = 0.5
-        pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
-        frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
-
-        # output point clouds
-        for i, cloud in enumerate(clouds):
-            cloud = self.segment_cloud(cloud, pclmsg)
-            self.object_aware_cloud = cloud
-
-        for i, mask in enumerate(masks):
-            label = labels[i]
-            colour = COLOURS[label]
-
-            # segmentation masks
-            binary_mask = mask > 0.5
-            frame_coloured = np.array((frame * (1-alpha) + colour * alpha), dtype=np.uint8)
-            frame = np.where(binary_mask, frame_coloured, frame)
-
-            # bboxes + info
-            x1, y1, x2, y2 = [int(v) for v in boxes[i]]
-            cv2.putText(frame, 'confidence: {:.2f}'.format(scores[i]), (x1, y1 - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
-            cv2.putText(frame, 'class: {}'.format(labels_text[i]), (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
-
-
-            pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
-            pub.publish(cloud)
-
-
-        cv2.imshow('test', frame)
-        cv2.waitKey(1)
 
     def get_point_cloud(self, data):
         point = self.tf.transformPoint("/base_link", data.i)
@@ -172,9 +94,8 @@ class ApproachFoodCupboard(State):
         self.movebase_client.wait_for_server()
 
         sub = rospy.Subscriber("/xtion/depth_registered/points", PointCloud2, self.identify_obstacles, queue_size=1)
-        self.move.look_down(-1.0)
-        self.identify_objects()
 
+        self.move.look_down(-1.0)
 
 
         for location_id in range(0, len(self.locations)):
@@ -183,7 +104,7 @@ class ApproachFoodCupboard(State):
             if location_name == "goal":
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
-                self.move_to_location(current_location)
+                #self.move_to_location(current_location)
 
         sub.unregister()
         command = rospy.get_param("/message")

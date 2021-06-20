@@ -13,6 +13,8 @@ from move import Move
 import rospy
 import rospkg
 
+import ros_numpy
+
 
 class SegmentFloor():
     def __init__(self):
@@ -42,8 +44,10 @@ class SegmentFloor():
         return pcl, frame, imgmsg
 
 
-    def detect(self, pclmsg):
+    def detect(self, pclmsg, ycb_maskrcnn):
+        self.ycb_maskrcnn = ycb_maskrcnn
         mask_confidence = 0.5
+        old_pcl_msg = pclmsg
 
         #convert pcl msg
         pcl, img, imgmsg = self.pclmsg_to_pcl_cv2_imgmsg(pclmsg)
@@ -84,8 +88,9 @@ class SegmentFloor():
         pclmsg.data = pcl.flatten().tostring()
 
         # results
-        cloud = pclmsg
-        self.pub.publish(cloud)
+        self.object_aware_cloud = pclmsg
+        #self.identify_objects(self.object_aware_cloud, old_pcl_msg)
+        self.pub.publish(self.object_aware_cloud)
 
         cv2.namedWindow('masked_image')
         cv2.imshow('masked_image', img)
@@ -96,8 +101,72 @@ class SegmentFloor():
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             cv2.destroyAllWindows()
+
+
+    def segment_cloud(self, cloud, pclmsg):
+        mask_confidence = 0.5
+
+        #convert pcl msg
+        pcl, img, imgmsg = self.pclmsg_to_pcl_cv2_imgmsg(cloud)
+
+        original_image = img
+        hsv_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        kernel = np.ones((5, 5), np.uint8)
+
+        #colour hsv values
+        colour_low = np.array([10, 30, 20])
+        colour_high = np.array([40, 255, 255])
+        white = np.array([0,0,0])
+
+        #mask the floor and obstacles
+        floor_mask = cv2.inRange(hsv_image, colour_low, colour_high)
+        obstacles_mask = floor_mask
+        img = cv2.bitwise_and(img, img, mask = obstacles_mask)
+        #obstacles = original_image - img
+        obstacles = img
+
+        binary_mask = obstacles_mask > mask_confidence
+        cv2.imshow('binmask', binary_mask.astype(np.float32))
+        indices = np.argwhere(binary_mask)
+
+        # set dist to infinity if x,y in mask = 0
+        # otherwise keep dist if x,y in mask = 1
+        # complexity is O(3N) so it should b fast
+        pcl = pcl.reshape(cloud.height, cloud.width, 32)
+        pcl = pcl.view(np.float32)
+        temp = {}
+        for y,x in indices:
+            temp[y,x] = pcl[y,x,2]
+        pcl[:,:,2] = float('inf')
+        for y,x in indices:
+            pcl[y,x,2] = temp[y,x]
+
+        # create pcl
+        cloud.data = pcl.flatten().tostring()
+
         return cloud
 
+
+    def identify_objects(self, object_aware_cloud, pclmsg):
+        #ycb_sub = rospy.Subscriber('segmentations/{}', 1, callback = self.get_point_cloud)
+        # colour stuff
+        np.random.seed(69)
+        COLOURS = np.random.randint(0, 256, (128,3))
+        alpha = 0.5
+        frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
+        print(labels_text)
+
+        # output point clouds
+        for i, cloud in enumerate(clouds):
+            #cloud = self.segment_cloud(cloud, pclmsg)
+            self.object_aware_cloud_sub = cloud
+
+        # output point clouds
+        for i, cloud in enumerate(clouds):
+            #cloud = self.segment_cloud(cloud, pclmsg)
+            self.object_aware_cloud_sub += cloud
+
+        self.object_aware_cloud = self.object_aware_cloud_sub
 
     def callback(self):
         try:
