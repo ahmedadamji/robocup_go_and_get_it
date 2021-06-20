@@ -89,7 +89,7 @@ class SegmentFloor():
 
         # results
         self.object_aware_cloud = pclmsg
-        #self.identify_objects(self.object_aware_cloud, old_pcl_msg)
+        self.identify_objects(self.object_aware_cloud, old_pcl_msg)
         self.pub.publish(self.object_aware_cloud)
 
         cv2.namedWindow('masked_image')
@@ -156,17 +156,16 @@ class SegmentFloor():
         frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
         print(labels_text)
 
-        # output point clouds
-        for i, cloud in enumerate(clouds):
-            #cloud = self.segment_cloud(cloud, pclmsg)
-            self.object_aware_cloud_sub = cloud
 
         # output point clouds
         for i, cloud in enumerate(clouds):
             #cloud = self.segment_cloud(cloud, pclmsg)
-            self.object_aware_cloud_sub += cloud
+            #self.object_aware_cloud += cloud
+            print cloud
 
-        self.object_aware_cloud = self.object_aware_cloud_sub
+            pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
+            pub.publish(cloud)
+
 
     def callback(self):
         try:
