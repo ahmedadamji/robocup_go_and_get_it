@@ -165,6 +165,12 @@ class SegmentFloor():
 
             pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
             pub.publish(cloud)
+        cloud = clouds[0]
+        for i in range(len(clouds)-1):
+            cloud += clouds[i+1]
+        
+        print cloud
+
 
 
     def callback(self):
