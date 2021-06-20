@@ -154,14 +154,14 @@ class SegmentFloor():
         COLOURS = np.random.randint(0, 256, (128,3))
         alpha = 0.5
         frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
-        print(labels_text)
+        #print(labels_text)
 
 
         # output point clouds
         for i, cloud in enumerate(clouds):
             #cloud = self.segment_cloud(cloud, pclmsg)
             #self.object_aware_cloud += cloud
-            print cloud
+            #print cloud
 
             pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
             pub.publish(cloud)
