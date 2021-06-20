@@ -41,7 +41,7 @@ class ApproachFoodCupboard(State):
 
 
     def identify_obstacles(self, data):
-        self.segmentfloor.detect(data, self.ycb_maskrcnn)
+        self.segmentfloor.detect(data)
 
 
     def pclmsg_to_pcl_cv2_imgmsg(self, pclmsg):
