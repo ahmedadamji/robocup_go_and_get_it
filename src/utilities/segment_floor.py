@@ -99,15 +99,17 @@ class SegmentFloor():
         #mask the floor and obstacles
         floor_mask = cv2.inRange(hsv_image, colour_low, colour_high)
         obstacles_mask = cv2.bitwise_not(floor_mask)
+        print(obstacles_mask.dtype)
+
+        print(self.objects_mask.dtype)
+        objects_mask = self.objects_mask > mask_confidence
 
         #print np.array(obstacles_mask).shape
-        obstacles_mask = cv2.bitwise_or(obstacles_mask, self.objects_mask)
 
-        img = cv2.bitwise_and(img, img, mask = obstacles_mask)
-        #obstacles = original_image - img
-        obstacles = img
 
         binary_mask = obstacles_mask > mask_confidence
+
+        obstacles_mask = cv2.bitwise_or(binary_mask, mask_confidence)
         cv2.imshow('binmask', binary_mask.astype(np.float32))
         indices = np.argwhere(binary_mask)
 
@@ -156,9 +158,12 @@ class SegmentFloor():
         for i, mask in enumerate(masks):
             if i == 0:
                 self.previous_mask = mask
+                self.previous_mask = self.previous_mask > 0.5
 
         for i, mask in enumerate(masks):
+            mask = mask > 0.5
             self.previous_mask = cv2.bitwise_or(mask, self.previous_mask)
+
 
             label = labels_text[i]
             #print label
