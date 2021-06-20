@@ -122,7 +122,7 @@ if __name__ == '__main__':
             pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
             pub.publish(cloud)
 
-            #pub = rospy.Publisher('segmentations'.format(i), PointCloud2, queue_size=1)
+            #pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
             #pub.publish(cloud)
 
 

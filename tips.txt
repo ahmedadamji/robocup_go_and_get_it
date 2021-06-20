@@ -1,3 +1,5 @@
+DISPLAY=:0 xhost si:localuser:root
+
 sudo docker-compose -f docker-compose.fps.yml up
 
 docker-compose exec simulator bash

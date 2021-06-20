@@ -96,6 +96,7 @@ class SegmentFloor():
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             cv2.destroyAllWindows()
+        return cloud
 
 
     def callback(self):
