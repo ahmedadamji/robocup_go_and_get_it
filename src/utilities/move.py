@@ -143,12 +143,13 @@ class Move:
         wait, result = self.send_joint_trajectory('/head_controller/follow_joint_trajectory', ['head_1_joint','head_2_joint'], [0, head], 2.0)
         wait()
 
-    def hand_to_default(self):
+    def hand_to_default(self, wait=False):
         goal = PlayMotionGoal()
         goal.motion_name = "home"
         goal.skip_planning = False
         self.playmotion_client.send_goal(goal)
-        self.playmotion_client.wait_for_result()
+        if wait:
+            self.playmotion_client.wait_for_result()
 
     def offer_hand(self):
         goal = PlayMotionGoal()

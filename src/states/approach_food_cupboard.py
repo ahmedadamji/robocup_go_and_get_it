@@ -104,7 +104,7 @@ class ApproachFoodCupboard(State):
             if location_name == "goal":
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
-                #self.move_to_location(current_location)
+                self.move_to_location(current_location)
 
         sub.unregister()
         command = rospy.get_param("/message")
