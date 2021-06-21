@@ -4,6 +4,7 @@ import actionlib
 
 from smach import State
 from sensor_msgs.msg import PointCloud2
+import std_msgs.msg
 import numpy as np
 import cv2
 
@@ -17,6 +18,8 @@ class FindObject(State):
 
         #creates an instance of util class to transform point frames
         self.util = util
+        #creates an instance of move class to move robot across the map
+        self.move = move
 
         
         self.ycb_maskrcnn = ycb_maskrcnn
@@ -31,6 +34,8 @@ class FindObject(State):
         alpha = 0.5
         pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
         frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
+
+        print labels_text
     
         # output point clouds
         for i, cloud in enumerate(clouds):
@@ -43,8 +48,9 @@ class FindObject(State):
         self.no_matches = 0
 
         for i, mask in enumerate(masks):
-            label = labels_text[i]
-            colour = COLOURS[label]
+            label = np.array(labels_text[i])
+            colour_label = labels[i]
+            colour = COLOURS[colour_label]
 
             # segmentation masks
             binary_mask = mask > 0.5
@@ -83,25 +89,37 @@ class FindObject(State):
         rospy.loginfo("FindObject state executing")
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
-        pub.publish(std_msgs.msg.String("apple to person left"))
+        pub.publish(std_msgs.msg.String("plastic apple"))
+
+        self.move.look_down(-0.80)
 
 
-
-        target_name = rospy.wait_for_message("/message")
-        self.object = target_name
+        target_name = rospy.wait_for_message("/message", std_msgs.msg.String)
+        self.object = target_name.lower()
         self.result = None
         torso_height = 0.0
-        while (self.result is None) and (torso_height <= 0.30):
+        while (self.result is None) and (torso_height <= 0.35):
             self.move.set_torso_height(torso_height)
             self.result = self.identify_objects()
-            torso_height += 0.15
-
+            torso_height += 0.13
+            
+            if self.result is not None:
+                rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
+                self.grasp_object(self.result)
+                self.move.look_down(0)
+                return "outcome1"
+         
+        self.move.look_down(0)
+        self.result = self.identify_objects()
+              
         if self.result is not None:
             rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
             self.grasp_object(self.result)
+            self.move.look_down(0)
             return "outcome1"
         else:
             print "Object not found on shelves"
+            self.move.look_down(0)
             return "outcome2"
 
 

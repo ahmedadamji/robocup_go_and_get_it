@@ -106,7 +106,6 @@ class ApproachFoodCupboard(State):
                 self.move_to_location(current_location)
 
         
-        self.move.look_down(0)
 
         sub.unregister()
 

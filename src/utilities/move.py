@@ -145,7 +145,7 @@ class Move:
     
     def set_torso_height(self, height=0.17):
         #use 0,0.15,0.3 as 3 levels? Max value is 0.35
-        wait, result = self.send_joint_trajectory('/torso_controller/follow_joint_trajectory', 'torso_lift_joint', height, 0.0)
+        wait, result = self.send_joint_trajectory('/torso_controller/follow_joint_trajectory', ['torso_lift_joint'], [height], 4.0)
         wait()
 
     def hand_to_default(self, wait=False):

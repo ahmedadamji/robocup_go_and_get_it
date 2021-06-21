@@ -44,7 +44,6 @@ class ApproachPerson(State):
     def execute(self, userdata, wait=True):
         rospy.loginfo("ApproachPerson state executing")
 
-        rospy.set_param("/message", "apple to person left") #remove later
 
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
@@ -61,12 +60,12 @@ class ApproachPerson(State):
 
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
-        pub.publish(std_msgs.msg.String("apple to person left"))
+        pub.publish(std_msgs.msg.String("person left"))
 
         
 
         target_name = rospy.wait_for_message("/message")
-        self.person = target_name
+        self.person = target_name.lower()
         
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
