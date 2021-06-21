@@ -4,10 +4,10 @@
     <!-- Loading the custom motions, guest locations and features for disambiguation into the parameter server -->
     <rosparam command="load" file="$(find robocup_go_and_get_it)/config/locations.yaml" />
 
-    <!-- Launching servers part of the pointing_recognition package as nodes -->
+    <!-- Including other launch files -->
+    <include file="$(find execute_grasp_moveit_grasps)/launch/gpd.launch" />
 
-
-    <!-- Launching packages used alongside -->
-    <!-- <node pkg="lasr_object_detection_yolo" type="object_detection_server.py" name="yolo_object_detection_server" respawn="true" output="screen"/> -->
+    <!-- Launching state machine
+    <node pkg="robocup_go_and_get_it" type="state_machine.py" name="state_machine" respawn="true" output="screen"/> -->
 
 </launch>

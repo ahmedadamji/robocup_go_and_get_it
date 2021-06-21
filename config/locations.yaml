@@ -15,16 +15,22 @@ locations:
 
   - name: 'goal'
     approach_location:
-      position: { x: 2.20, y: 3.99, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.70, w: 0.72 }
+      position: { x: 2.25, y: 3.99, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.707, w: 0.707 }
+
+  - name: 'delivery'
+    approach_location:
+      position: { x: 0.65, y: 3.41, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 1.00, w: -0.05 }
+
+  - name: 'person right'
+    approach_location:
+      position: { x: 0.65, y: 3.41, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.93, w: 0.36 }
       
   - name: 'person left'
     approach_location:
-      position: { x: 0.87, y: 2.94, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.998, w: -0.065 }
+      position: { x: 0.65, y: 3.41, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.95, w: -0.34 }
       
-  - name: 'person right'
-    approach_location:
-      position: { x: 0.87, y: 3.89, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.998, w: -0.069 }
       

@@ -142,6 +142,11 @@ class Move:
     def look_down(self, head=-0.75):
         wait, result = self.send_joint_trajectory('/head_controller/follow_joint_trajectory', ['head_1_joint','head_2_joint'], [0, head], 2.0)
         wait()
+    
+    def set_torso_height(self, height=0.17):
+        #use 0,0.15,0.3 as 3 levels? Max value is 0.35
+        wait, result = self.send_joint_trajectory('/torso_controller/follow_joint_trajectory', 'torso_lift_joint', height, 0.0)
+        wait()
 
     def hand_to_default(self, wait=False):
         goal = PlayMotionGoal()

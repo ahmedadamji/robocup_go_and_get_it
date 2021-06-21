@@ -55,21 +55,36 @@ class ApproachPerson(State):
         # wait until the action server has started up and started listening for goals
         self.movebase_client.wait_for_server()
 
+        current_location = self.locations[3]
+        self.move_to_location(current_location)
+
+
+        ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
+        pub.publish(std_msgs.msg.String("apple to person left"))
+
+        
+
+        target_name = rospy.wait_for_message("/message")
+        self.person = target_name
+        
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
 
-            command = rospy.get_param("/message")
 
-            if location_name in command:
-                rospy.set_param("/current_location", self.locations[location_id])
+            if location_name in self.person:
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
 
                 return "outcome1"
 
-        rospy.set_param("/current_location", self.locations[0])
-        current_location = self.locations[location_id]
+        current_location = self.locations[5]
         self.move_to_location(current_location)
+
+        return "outcome1"
+
+
+
         self.deliver_object()
 
 

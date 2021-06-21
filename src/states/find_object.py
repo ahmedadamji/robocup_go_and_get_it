@@ -43,7 +43,7 @@ class FindObject(State):
         self.no_matches = 0
 
         for i, mask in enumerate(masks):
-            label = labels[i]
+            label = labels_text[i]
             colour = COLOURS[label]
 
             # segmentation masks
@@ -63,10 +63,14 @@ class FindObject(State):
                 y = (y1+y2)/2
                 camera_point_2d = [x,y]
                 self.object_world_coordinate = self.util.get_world_coordinate_from_2d_pixel_coordinate()
+                print("object found at current torso height")
+                return clouds[i]
             else:
                 self.no_matches += 1
         if self.no_matches == len(masks):
-            print("object not found")
+            print("object not found at current torso height")
+            return None
+
 
         cv2.imshow('test', frame)
         cv2.waitKey(1)
@@ -77,12 +81,28 @@ class FindObject(State):
 
     def execute(self, userdata, wait=True):
         rospy.loginfo("FindObject state executing")
+        ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
+        pub.publish(std_msgs.msg.String("apple to person left"))
 
-        self.object = rospy.get_param("/object")
 
-        # self.identify_objects()
-        self.grasp_object()
 
-        rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
+        target_name = rospy.wait_for_message("/message")
+        self.object = target_name
+        self.result = None
+        torso_height = 0.0
+        while (self.result is None) and (torso_height <= 0.30):
+            self.move.set_torso_height(torso_height)
+            self.result = self.identify_objects()
+            torso_height += 0.15
+
+        if self.result is not None:
+            rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
+            self.grasp_object(self.result)
+            return "outcome1"
+        else:
+            print "Object not found on shelves"
+            return "outcome2"
+
+
         
-        return "outcome2"

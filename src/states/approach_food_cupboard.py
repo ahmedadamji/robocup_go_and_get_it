@@ -82,7 +82,6 @@ class ApproachFoodCupboard(State):
 
     def execute(self, userdata, wait=True):
         rospy.loginfo("ApproachFoodCupboard state executing")
-        rospy.set_param("/message", "apple to person left")
 
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
@@ -106,9 +105,9 @@ class ApproachFoodCupboard(State):
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
 
-        sub.unregister()
-        command = rospy.get_param("/message")
-        rospy.set_param("/object", command)
+        
         self.move.look_down(0)
+
+        sub.unregister()
 
         return "outcome2"
