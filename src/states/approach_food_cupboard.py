@@ -17,6 +17,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 import actionlib
 from std_msgs.msg import Empty
 
+import ros_numpy
 
 
 
@@ -37,6 +38,16 @@ class ApproachFoodCupboard(State):
         self.ycb_maskrcnn = ycb_maskrcnn
 
         self.segmentfloor = segmentfloor
+
+    def empty_cloud(self):
+        data = np.zeros(100, dtype=[('x', np.float32),('y', np.float32),('z', np.float32)])
+
+        msg = ros_numpy.msgify(PointCloud2, data)
+        msg.header.frame_id = 'map'
+        cloud_pub = rospy.Publisher('/object_aware_cloud', PointCloud2, queue_size=1)
+        rate = rospy.Rate(1)
+
+        cloud_pub.publish(msg)
 
 
 
@@ -74,14 +85,18 @@ class ApproachFoodCupboard(State):
         #self.move.rotate_around_base(-20)
         if movebase == True:
             print("Reached the "  + current_location.get("name"))
+            return True
         else:
             # INSERT HERE THE ACTION IF GOAL NOT ACHIEVED
-            self.interaction.talk("I have not been able to reach the " + current_location.get("name") )
-
+            #self.interaction.talk("I have not been able to reach the " + current_location.get("name") )
+            print("cannot reach destination")
+            return False
 
 
     def execute(self, userdata, wait=True):
         rospy.loginfo("ApproachFoodCupboard state executing")
+
+        self.empty_cloud()
 
         # Collects the details of locations in the environment from the util class and saves in self.locations
         self.locations = self.util.locations
@@ -103,10 +118,9 @@ class ApproachFoodCupboard(State):
             if location_name == "goal":
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
-                self.move_to_location(current_location)
-
+                if self.move_to_location(current_location) == False:
+                    return "outcome2"
         
-
         sub.unregister()
 
-        return "outcome2"
+        return "outcome1"

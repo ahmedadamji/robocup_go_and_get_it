@@ -88,8 +88,8 @@ class FindObject(State):
     def execute(self, userdata, wait=True):
         rospy.loginfo("FindObject state executing")
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
-        pub.publish(std_msgs.msg.String("plastic apple"))
+        #pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
+        #pub.publish(std_msgs.msg.String("frenchs mustard bottle"))
 
         self.move.look_down(-0.80)
 
@@ -97,6 +97,7 @@ class FindObject(State):
         target_name = rospy.wait_for_message("/message", std_msgs.msg.String)
         self.object = target_name.lower()
         self.result = None
+        print(self.object)
         torso_height = 0.0
         while (self.result is None) and (torso_height <= 0.35):
             self.move.set_torso_height(torso_height)
@@ -115,6 +116,7 @@ class FindObject(State):
         if self.result is not None:
             rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
             self.grasp_object(self.result)
+            print(self.result)
             self.move.look_down(0)
             return "outcome1"
         else:

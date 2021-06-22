@@ -58,7 +58,7 @@ class ApproachRoomTwo(State):
                 rospy.set_param("/current_location", self.locations[location_id])
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
-                self.move.hand_to_default()
+                self.move.hand_to_default(True)
 
             if location_name == "obstacle avoidance":
                 rospy.set_param("/current_location", self.locations[location_id])

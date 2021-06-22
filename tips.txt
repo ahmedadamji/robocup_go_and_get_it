@@ -12,3 +12,13 @@ cd workspace
 source devel/setup.bash
 roslaunch robocup_go_and_get_it support_modules.launch 
 rosrun robocup_go_and_get_it state_machine.py
+
+
+### HSR
+sim launch hsrb_wrs_gazebo_launch wrs_practice0_easy_tmc.launch use_oss_stacks:=true fast_physics:=true highrtf:=true seed:=10 per_category:=6 obstacles:=5
+
+### TiaGO
+
+sim launch tiago_robocup2021_opl_gazebo_launch practice0.launch seed:=10 per_category:=6 obstacles:=5
+
+
