@@ -15,8 +15,8 @@ locations:
 
   - name: 'goal'
     approach_location:
-      position: { x: 2.25, y: 3.99, z: 0.0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.707, w: 0.707 }
+      position: { x: 2.2281, y: 4.0018, z: 0.0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.70504, w: 0.70916 }
 
   - name: 'delivery'
     approach_location:

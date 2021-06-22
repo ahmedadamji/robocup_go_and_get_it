@@ -159,7 +159,7 @@ if __name__ == '__main__':
                 'lego duplo', 'jell-o chocolate pudding box', 'scissors',
                 'wood block', 'domino sugar box', 'toy airplane',
                 'lego duplo', 'master chef coffee can', 'golf ball',
-                'chain', 'bowl', 'french’s mustard bottle',
+                'chain', 'bowl', 'frenchs mustard bottle',
                 'plastic strawberry', 'spoon', 'tomato soup can',
                 'jell-o strawberry gelatin box', 'lego duplo', 'lego duplo',
                 'colored wood blocks', 'cheez-it cracker box', 'soft ball',
@@ -167,7 +167,7 @@ if __name__ == '__main__':
                 'lego duplo', 'nine hole peg test', 'spatula',
                 'cups', 'skillet lid', 'clamps',
                 'cups', 'fork', 'toy airplane',
-                'rubik’s cube', 'phillips screwdriver', 'cups',
+                'rubiks cube', 'phillips screwdriver', 'cups',
                 'flat screwdriver', 'plastic apple', 'skillet',
                 'cups'
                 ]
