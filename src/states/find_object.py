@@ -8,7 +8,7 @@ import std_msgs.msg
 import numpy as np
 import cv2
 
-from robocup_grasps import main as grasp_main
+from robocup_grasps import RobocupGrasps
 
 class FindObject(State):
     def __init__(self, util, move, ycb_maskrcnn):
@@ -21,12 +21,11 @@ class FindObject(State):
         #creates an instance of move class to move robot across the map
         self.move = move
 
-        
         self.ycb_maskrcnn = ycb_maskrcnn
-        self.object_world_coordinate = 0
+        self.rg = RobocupGrasps()
 
 
-    def identify_objects(self):
+    def identify_objects(self, target_name):
         #ycb_sub = rospy.Subscriber('segmentations/{}', 1, callback = self.get_point_cloud)
         # colour stuff
         np.random.seed(69)
@@ -35,20 +34,8 @@ class FindObject(State):
         pclmsg = rospy.wait_for_message('/xtion/depth_registered/points', PointCloud2)
         frame, pcl, boxes, clouds, scores, labels, labels_text, masks = self.ycb_maskrcnn.detect(pclmsg, confidence=0.5)
 
-        print labels_text
-    
-        # output point clouds
-        for i, cloud in enumerate(clouds):
-            pub = rospy.Publisher('segmentations/{}'.format(i), PointCloud2, queue_size=1)
-            pub.publish(cloud)
-            #print(i, cloud)
-            #pub = rospy.Publisher('segmentations'.format(i), PointCloud2, queue_size=1)
-            #pub.publish(cloud)
-
-        self.no_matches = 0
-
         for i, mask in enumerate(masks):
-            label = np.array(labels_text[i])
+            label = labels_text[i]
             colour_label = labels[i]
             colour = COLOURS[colour_label]
 
@@ -63,24 +50,13 @@ class FindObject(State):
             cv2.putText(frame, 'class: {}'.format(labels_text[i]), (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
 
-
-            if self.object in label:
-                x = (x1+x2)/2
-                y = (y1+y2)/2
-                camera_point_2d = [x,y]
-                self.object_world_coordinate = self.util.get_world_coordinate_from_2d_pixel_coordinate()
-                print("object found at current torso height")
+            print label
+            if target_name in label:
                 return clouds[i]
-            else:
-                self.no_matches += 1
-        if self.no_matches == len(masks):
-            print("object not found at current torso height")
-            return None
+
+        return None
 
 
-        cv2.imshow('test', frame)
-        cv2.waitKey(1)
-            
     def grasp_object(self):
         grasp_main()
 
@@ -88,39 +64,35 @@ class FindObject(State):
     def execute(self, userdata, wait=True):
         rospy.loginfo("FindObject state executing")
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
-        pub.publish(std_msgs.msg.String("plastic apple"))
+        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10, latch=True)
+        pub.publish(std_msgs.msg.String("mustard"))
 
-        self.move.look_down(-0.80)
-
-
-        target_name = rospy.wait_for_message("/message", std_msgs.msg.String)
-        self.object = target_name.lower()
-        self.result = None
+        target_name = rospy.wait_for_message("/message", std_msgs.msg.String).data
         torso_height = 0.0
-        while (self.result is None) and (torso_height <= 0.35):
-            self.move.set_torso_height(torso_height)
-            self.result = self.identify_objects()
-            torso_height += 0.13
-            
-            if self.result is not None:
-                rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
-                self.grasp_object(self.result)
-                self.move.look_down(0)
-                return "outcome1"
-         
-        self.move.look_down(0)
-        self.result = self.identify_objects()
-              
-        if self.result is not None:
-            rospy.set_param("/object_world_coordinate", self.object_world_coordinate)
-            self.grasp_object(self.result)
-            self.move.look_down(0)
-            return "outcome1"
-        else:
-            print "Object not found on shelves"
-            self.move.look_down(0)
-            return "outcome2"
 
+        while not rospy.is_shutdown():
+            for i in xrange(5): # 5 attempts to pick it up at this height
+                # setup moveit, octomap and robot
+                self.rg.detach_object()
+                self.rg.remove_object()
+                self.rg.clear_octomap()
+                self.move.set_torso_height(torso_height)
+                self.move.look_down(-0.80)
 
+                # detect the target
+                result = self.identify_objects(target_name.lower())                
+                if result is None:
+                    break
+
+                # do the moveit and return outcome1 if it works
+                moveit_goal = self.rg.main(result)
+                if moveit_goal and not self.rg.test_grippers_closed():
+                    return "outcome1"
+                self.move.hand_to_default(wait=True)
+
+            if torso_height == 0.35:
+                break
+            torso_height = min(torso_height + 0.13, 0.35)
+
+        return "outcome2"
         
