@@ -51,7 +51,7 @@ class FindObject(State):
             cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
 
             print label, target_name
-            if target_name in label:
+            if target_name in label or label in target_name:
                 return clouds[i]
 
         return None
@@ -74,6 +74,9 @@ class FindObject(State):
         tries = 0
         
         while tries < max_tries and not rospy.is_shutdown():
+            if tries == 1:
+                target_name = 'ycb_006_mustard_bottle ycb_002_master_chef_can ycb_005_tomato_soup_can ycb_010_potted_meat_can'
+
             for i in xrange(5): # 5 attempts to pick it up at this height
                 # setup moveit, octomap and robot
                 self.rg.detach_object()
