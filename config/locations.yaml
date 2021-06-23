@@ -5,8 +5,8 @@
 locations:
   - name: 'entrance'
     approach_location:
-      position: { x: 0.26, y: 0.44, z: 0 }
-      orientation: { x: 0.0, y: 0.0, z: 0.35, w: 0.94 }
+      position: { x: 2.2, y: 0.45, z: 0 }
+      orientation: { x: 0.0, y: 0.0, z: 0.63, w: 0.77 }
       
   - name: 'obstacle avoidance'
     approach_location:

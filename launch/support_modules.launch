@@ -7,7 +7,7 @@
     <!-- Including other launch files -->
     <include file="$(find execute_grasp_moveit_grasps)/launch/gpd.launch" />
 
-    <!-- Launching state machine
-    <node pkg="robocup_go_and_get_it" type="state_machine.py" name="state_machine" respawn="true" output="screen"/> -->
+    <!-- Launching state machine -->
+    <node pkg="robocup_go_and_get_it" type="state_machine.py" name="state_machine" respawn="true" output="screen"/>
 
 </launch>

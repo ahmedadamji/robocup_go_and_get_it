@@ -3,6 +3,7 @@ import rospy
 import actionlib
 
 from smach import State
+from std_msgs.msg import String
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Point, Pose, Quaternion, PointStamped, Vector3, PoseWithCovarianceStamped
 import tf
@@ -58,14 +59,8 @@ class ApproachPerson(State):
         self.move_to_location(current_location)
 
 
-        ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10)
-        pub.publish(std_msgs.msg.String("person left"))
-
-        
-
-        target_name = rospy.wait_for_message("/message")
-        self.person = target_name.lower()
+        target_name = rospy.wait_for_message("/message", String)
+        self.person = target_name.data.split(' ')[2:]
         
         for location_id in range(0, len(self.locations)):
             location_name = self.locations[location_id].get("name")
@@ -74,18 +69,12 @@ class ApproachPerson(State):
             if location_name in self.person:
                 current_location = self.locations[location_id]
                 self.move_to_location(current_location)
+                self.deliver_object()
 
                 return "outcome1"
 
         current_location = self.locations[5]
         self.move_to_location(current_location)
-
-        return "outcome1"
-
-
-
         self.deliver_object()
-
-
 
         return "outcome1"

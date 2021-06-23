@@ -155,6 +155,7 @@ class Move:
         self.playmotion_client.send_goal(goal)
         if wait:
             self.playmotion_client.wait_for_result()
+        return self.playmotion_client.wait_for_result
 
     def offer_hand(self):
         goal = PlayMotionGoal()

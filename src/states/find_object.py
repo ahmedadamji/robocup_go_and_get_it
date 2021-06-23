@@ -50,7 +50,7 @@ class FindObject(State):
             cv2.putText(frame, 'class: {}'.format(labels_text[i]), (x1, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), colour, 2)
 
-            print label
+            print label, target_name
             if target_name in label:
                 return clouds[i]
 
@@ -65,12 +65,15 @@ class FindObject(State):
         rospy.loginfo("FindObject state executing")
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10, latch=True)
-        pub.publish(std_msgs.msg.String("mustard"))
+        # pub.publish(std_msgs.msg.String("mustard"))
 
         target_name = rospy.wait_for_message("/message", std_msgs.msg.String).data
+        target_name = target_name.split(' ')[0]
         torso_height = 0.0
-
-        while not rospy.is_shutdown():
+        max_tries = 3
+        tries = 0
+        
+        while tries < max_tries and not rospy.is_shutdown():
             for i in xrange(5): # 5 attempts to pick it up at this height
                 # setup moveit, octomap and robot
                 self.rg.detach_object()
@@ -91,8 +94,10 @@ class FindObject(State):
                 self.move.hand_to_default(wait=True)
 
             if torso_height == 0.35:
-                break
-            torso_height = min(torso_height + 0.13, 0.35)
+                tries += 1
+                torso_height = 0
+            else:
+                torso_height = min(torso_height + 0.13, 0.35)
 
         return "outcome2"
         
