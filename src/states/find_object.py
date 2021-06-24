@@ -62,6 +62,26 @@ class FindObject(State):
 
 
     def execute(self, userdata, wait=True):
+        OBJECT_LIST = [
+            "ycb_005_tomato_soup_can",   # Tomato soup can
+            "ycb_010_potted_meat_can",   # Spam potted meat can
+            "ycb_006_mustard_bottle",    # French's mustard bottle
+            "ycb_004_sugar_box",         # Domino sugar box
+            "ycb_013_apple",             # Plastic apple
+            "ycb_017_orange",            # Plastic orange
+            "ycb_015_peach",             # Plastic peach
+            "ycb_016_pear",              # Plastic pear
+            "ycb_011_banana",            # Plastic banana
+            "ycb_003_cracker_box",       # Cheez-it cracker box
+            "ycb_014_lemon",             # Plastic lemon
+            "ycb_018_plum"               # Plastic plum
+            "ycb_012_strawberry",        # Plastic strawberries
+            "ycb_007_tuna_fish_can",     # Starkist tuna fish can
+            "ycb_008_pudding_box",       # Jell-o chocolate pudding box
+            "ycb_009_gelatin_box",       # Jell-o strawberry gelatin box
+            "ycb_002_master_chef_can",   # Master chef coffee can
+        ]
+
         rospy.loginfo("FindObject state executing")
         ## REMEMBER TO REMOVE THIS BEFORE THE COMPETITION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         pub = rospy.Publisher('/message', std_msgs.msg.String, queue_size=10, latch=True)
@@ -69,38 +89,31 @@ class FindObject(State):
 
         target_name = rospy.wait_for_message("/message", std_msgs.msg.String).data
         target_name = target_name.split(' ')[0]
-        torso_height = 0.0
-        max_tries = 3
-        tries = 0
-        
-        while tries < max_tries and not rospy.is_shutdown():
-            if tries == 1:
-                target_name = 'ycb_006_mustard_bottle ycb_002_master_chef_can ycb_005_tomato_soup_can ycb_010_potted_meat_can'
 
-            for i in xrange(5): # 5 attempts to pick it up at this height
-                # setup moveit, octomap and robot
-                self.rg.detach_object()
-                self.rg.remove_object()
-                self.rg.clear_octomap()
-                self.move.set_torso_height(torso_height)
-                self.move.look_down(-0.80)
+        for target_name in OBJECT_LIST:
+            torso_height = 0.0
+            while not rospy.is_shutdown():
+                result = None
+                for i in xrange(2):
+                    # setup moveit, octomap and robot
+                    self.rg.detach_object()
+                    self.rg.remove_object()
+                    self.rg.clear_octomap()
+                    self.move.set_torso_height(torso_height)
+                    self.move.look_down(-0.80)
 
-                # detect the target
-                result = self.identify_objects(target_name.lower())                
-                if result is None:
+                    # detect the target
+                    result = self.identify_objects(target_name.lower())
+                    if result is not None:
+                        # do the moveit and return outcome1 if it works
+                        moveit_goal = self.rg.main(result)
+                        if moveit_goal and not self.rg.test_grippers_closed():
+                            return "outcome1"
+                        self.move.hand_to_default(wait=True)
+
+                if torso_height >= 0.35 or result is not None:
                     break
-
-                # do the moveit and return outcome1 if it works
-                moveit_goal = self.rg.main(result)
-                if moveit_goal and not self.rg.test_grippers_closed():
-                    return "outcome1"
-                self.move.hand_to_default(wait=True)
-
-            if torso_height == 0.35:
-                tries += 1
-                torso_height = 0
-            else:
                 torso_height = min(torso_height + 0.13, 0.35)
 
         return "outcome2"
-        
+            
