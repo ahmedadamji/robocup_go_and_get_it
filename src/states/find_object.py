@@ -52,7 +52,8 @@ class FindObject(State):
 
             print label, target_name
             if target_name in label or label in target_name:
-                return clouds[i]
+                if clouds[i].height > 0:
+                    return clouds[i]
 
         return None
 

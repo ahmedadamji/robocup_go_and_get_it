@@ -147,8 +147,13 @@ class MaskRCNN(object):
                 pcl_ds = pcl[::downsample, ::downsample, :]
                 mask_ds = mask[::downsample, ::downsample]
 
+                # nanmask
+                pcl_xyz = pcl_ds.copy().view(np.float32)[:,:,:3]
+                pcl_nan_mask = np.isfinite(pcl_xyz.sum(axis=2))
+
                 # get indices of mask
                 binary_mask = mask_ds > mask_confidence
+                binary_mask *= np.expand_dims(pcl_nan_mask, axis=2) # apply nan-mask
                 binary_mask = binary_mask.flatten()
                 indices = np.argwhere(binary_mask).flatten()
 
