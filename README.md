@@ -26,10 +26,10 @@ The task consists of two main parts:
 ## Approach
 We utilized a combination of state-of-the-art algorithms and custom solutions to accomplish the task:
 
-- Navigation: We used SLAM (Simultaneous Localization and Mapping) to create a map of the environment and path planning algorithms to navigate around obstacles.
-- Object Recognition: Our object recognition module leveraged deep learning techniques to identify the requested item among various food items.
-- Grasping: We developed a custom grasping strategy to handle occluded objects in the shelf, which involved moving other items to access the target object.
-- Human-Robot Interaction: Our solution used a combination of computer vision and natural language processing to identify the correct person to deliver the item to and understand their request.
+- **Navigation**: We used SLAM (Simultaneous Localization and Mapping) to create a map of the environment and path planning algorithms to navigate around obstacles.
+- **Object Recognition**: Our object recognition module leveraged deep learning techniques to identify the requested item among various food items.
+- **Object Manipulation & Grasping**: We developed a custom grasping strategy to handle occluded objects in the shelf, which involved moving other items to access the target object.
+- **Human-Robot Interaction**: Our solution used a combination of computer vision and natural language processing to identify the correct person to deliver the item to and understand their request.
 ## Results
 Our implementation achieved high scores in the competition:
 
