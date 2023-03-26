@@ -37,9 +37,9 @@ We also minimized penalty points by avoiding collisions, false deliveries, and a
 Repository
 Clone the repository:
 
-'''
+```
 git clone https://github.com/ahmedadamji/robocup_go_and_get_it.git
-'''
+```
 
 ## Docker Setup
 This project is meant to be used inside a Docker container. Follow the instructions in the TMC_WRS_Docker repository to set up the Docker environment.
@@ -54,9 +54,9 @@ Once the Docker environment is set up, follow these steps to run the code:
 - In the simulator's screen, click the play button (the right-facing arrow in the lower left of the screen) to start the simulation.
 
 In the IDE terminal, input the following command to start RViz:
-'''
+```
 rviz -d $(rospack find hsrb_rosnav_config)/launch/hsrb.rviz
-'''
+```
 RViz will appear in the simulator's screen. Click "2D Nav Goal" in RViz and set the autonomous movement goal for the HSR to move to the desired location.
 
 ## Usage
@@ -67,13 +67,13 @@ After starting the simulator and setting up RViz, you can execute the main code 
 - Deliver the item to the correct person in the delivery area.
 - To run the code, execute the following command in separate IDE terminals:
 
-'''
+```
 roslaunch robocup_go_and_get_it support_modules.launch
-'''
+```
 
-'''
+```
 rosrun robocup_go_and_get_it state_machine.py
-'''
+```
 
 Monitor the robot's progress in the simulator's screen and RViz.
 
