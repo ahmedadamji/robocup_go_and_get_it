@@ -3,12 +3,12 @@ This repository contains the code and documentation for the successful implement
 
 ## Robot In Action!
 
-[![LASR Go-get-it! Task for RoboCup 2021](https://img.youtube.com/vi/-IYFWRORLpc/sddefault.jpg)](https://youtu.be/s6ka4xrZGpA)
+[![LASR Go-get-it! Task for RoboCup 2021](https://img.youtube.com/vi/s6ka4xrZGpA/sddefault.jpg)](https://youtu.be/s6ka4xrZGpA)
 
 ## Watch The Presentation at RoboCup@Home 2021
 
 [![LASR
-](http://i3.ytimg.com/vi/-IYFWRORLpc/hqdefault.jpg)](https://youtu.be/-IYFWRORLpc)
+](https://img.youtube.com/vi/-IYFWRORLpc/sddefault.jpg)](https://youtu.be/-IYFWRORLpc)
 
 
 ## Introduction
