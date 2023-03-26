@@ -36,7 +36,7 @@ Our implementation achieved high scores in the competition:
 - Navigating to a location in Room 2 while avoiding random obstacles: 100 points
 - Grasping any food item in the shelf: 30 points
 - Correctly taking the requested food item: 70 additional points
-- - Delivering the object to a person in the delivery area: 30 points
+- Delivering the object to a person in the delivery area: 30 points
 - Correctly detecting a person request and giving the food item to them: 70 additional points
 - Correctly finishing the task within the time limit: 50 points
 - 20 points per minute for any remaining time
@@ -73,7 +73,7 @@ RViz will appear in the simulator's screen. Click "2D Nav Goal" in RViz and set 
 After starting the simulator and setting up RViz, you can execute the main code for the "Go and Get It" task. The code will guide the robot through the following steps:
 
 - Navigate to the shelf in Room 2 while avoiding obstacles.
-- - Identify and grasp the requested food item.
+- Identify and grasp the requested food item.
 - Deliver the item to the correct person in the delivery area.
 - To run the code, execute the following command in separate IDE terminals:
 
