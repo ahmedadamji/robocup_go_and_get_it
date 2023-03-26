@@ -1,0 +1,2 @@
+robocup.weights filter=lfs diff=lfs merge=lfs -text
+src/utilities/robocup.weights filter=lfs diff=lfs merge=lfs -text
