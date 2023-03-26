@@ -1,6 +1,16 @@
 # RoboCup@Home LASR Team: Go and Get It Task (2021)
 This repository contains the code and documentation for the successful implementation of the "Go and Get It" task in RoboCup@Home by the LASR research group in 2021. This was the team's first participation in the competition.
 
+## Robot In Action!
+
+[![LASR Go-get-it! Task for RoboCup 2021](https://img.youtube.com/vi/s6ka4xrZGpA/sddefault.jpg)](https://youtu.be/s6ka4xrZGpA)
+
+## Watch The Presentation at RoboCup@Home 2021
+
+[![LASR
+](http://i3.ytimg.com/vi/-IYFWRORLpc/hqdefault.jpg)](https://youtu.be/-IYFWRORLpc)
+
+
 ## Introduction
 The "Go and Get It" task focuses on providing a person with something to consume when requested. The robot must navigate through a messy environment, identify the requested item, grasp it, and deliver it to the correct person.
 
